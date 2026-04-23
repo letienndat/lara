@@ -54,6 +54,15 @@ struct RemoteView: View {
                 } label: {
                     Text("Hide Icon Labels")
                 }
+
+                Button {
+                    run("Toggle Overlay") {
+                        let result = toggle_springboard_overlay(mgr.sbProc)
+                        return "toggle_springboard_overlay() -> \(result)"
+                    }
+                } label: {
+                    Text("Toggle Overlay")
+                }
             } header: {
                 Text("SpringBoard")
             }
@@ -432,6 +441,7 @@ struct RemoteView: View {
             }
         }
         .navigationTitle(Text("Tweaks"))
+        .disabled(running)
     }
 
     private func run(_ name: String, _ work: @escaping () -> String, onComplete: ((String) -> Void)? = nil) {
