@@ -432,6 +432,7 @@ struct RemoteView: View {
             }
         }
         .navigationTitle(Text("Tweaks"))
+        .disabled(running)
     }
 
     private func run(_ name: String, _ work: @escaping () -> String, onComplete: ((String) -> Void)? = nil) {
