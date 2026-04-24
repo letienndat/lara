@@ -42,7 +42,7 @@ struct RemoteView: View {
             } header: {
                 Text("Status Bar Time Format")
             } footer: {
-                Text("The text automatically updates every MINUTE")
+                Text("Format supported include second (HH:mm:ss), or try \"E HH:mm\" <3")
             }
 
             Section {
