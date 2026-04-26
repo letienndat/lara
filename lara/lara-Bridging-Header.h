@@ -21,6 +21,12 @@ long FindCacheDataOffset(const char *mgKey);
 + (BOOL)_hasHomeButton;
 @end
 
+long FindCacheDataOffset(const char *mgKey);
+
+@interface UIDevice(Private)
++ (BOOL)_hasHomeButton;
+@end
+
 void test(NSString *path);
 
 NS_ASSUME_NONNULL_BEGIN
