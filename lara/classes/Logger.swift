@@ -347,6 +347,10 @@ struct LogsView: View {
     @ObservedObject var logger: Logger
     
     private let nobullshitkey = "loggernobullshit"
+    let logsURL: URL = {
+        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        return docs.appendingPathComponent("lara.log")
+    }()
 
     var body: some View {
         NavigationStack {
@@ -375,6 +379,10 @@ struct LogsView: View {
             .navigationTitle("Logs")
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    ShareLink(item: logsURL) {
+                        Image(systemName: "square.and.arrow.up")
+                    }
+
                     Button {
                         let allLogs = logger.logs.joined(separator: "\n\n")
                         UIPasteboard.general.string = allLogs

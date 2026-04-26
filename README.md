@@ -33,7 +33,7 @@
 </p>
 
 > [!WARNING]
-> Due to my laptop breaking, lara development is halted until i get a replacement screen or laptop. I thank everyone who has helped tje project so far and hope to be back one day.
+> Due to my laptop breaking, lara development is halted until i get a replacement screen or laptop. I thank everyone who has helped the project so far and hope to be back one day.
 
 ---
 

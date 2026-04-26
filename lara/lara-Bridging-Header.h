@@ -3,6 +3,7 @@
 //  lara
 //
 
+@import UIKit;
 #import <Foundation/Foundation.h>
 
 #import "darksword.h"
@@ -13,6 +14,12 @@
 #import "sbx.h"
 #import "rc.h"
 #import "RemoteCall.h"
+
+long FindCacheDataOffset(const char *mgKey);
+
+@interface UIDevice(Private)
++ (BOOL)_hasHomeButton;
+@end
 
 void test(NSString *path);
 
