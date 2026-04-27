@@ -3,7 +3,6 @@
 //  lara
 //
 //  Created by ruter on 29.03.26.
-//  Modified and fixed by claud, implemented by TheDiamondSqidy on 18.04.26
 //
 
 import SwiftUI
@@ -40,13 +39,6 @@ struct CardView: View {
         let backgroundFileName: String
     }
 
-    // MARK: - Card Row Subview
-    //
-    // Each CardRowView owns its own @State selectedOption, so changing the
-    // picker on one card cannot affect any other card's state. Previously,
-    // a single shared selectedOption on CardView caused every card's
-    // onChange handler to fire simultaneously, always resolving to the
-    // wrong (first) card.
     private struct CardRowView: View {
         let card: CardItem
         let onReplace: (CardItem, ReplaceOption) -> Void
@@ -112,9 +104,7 @@ struct CardView: View {
             }
         }
     }
-
-    // MARK: - Body
-
+    
     var body: some View {
         List {
             Section {
@@ -241,8 +231,6 @@ struct CardView: View {
             refreshCards()
         }
     }
-
-    // MARK: - Card Scanning
 
     private func refreshCards() {
         guard !working else { return }
@@ -413,8 +401,6 @@ struct CardView: View {
         return nil
     }
 
-    // MARK: - Image Replacement
-
     private func applyReplacement(card: CardItem, imageData: Data) {
         guard let image = UIImage(data: imageData) else {
             status = "Invalid image data"
@@ -475,8 +461,6 @@ struct CardView: View {
             status = "Restore failed"
         }
     }
-
-    // MARK: - Card Number
 
     private func passJsonPath(for card: CardItem) -> String {
         card.directoryPath + "/pass.json"
@@ -557,8 +541,6 @@ struct CardView: View {
             status = "Failed to restore pass.json"
         }
     }
-
-    // MARK: - Cache & I/O
 
     private func clearCache(for card: CardItem) {
         let fm = FileManager.default

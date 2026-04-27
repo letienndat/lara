@@ -32,6 +32,7 @@ final class laramgr: ObservableObject {
     @Published var eu1running: Bool = false
     @Published var eu2progress: Double = 0.0
     @Published var eu2running: Bool = false
+    @Published var rcLastError: String?
     #endif
     
     @Published var vfsready: Bool = false
@@ -472,6 +473,7 @@ final class laramgr: ObservableObject {
         }
         
         rcrunning = true
+        rcLastError = nil
         logmsg("initializing remote call on \(process)...")
         
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
@@ -482,10 +484,18 @@ final class laramgr: ObservableObject {
                 let success = self.sbProc != nil
                 if success {
                     self.logmsg("remote call initialized on \(process)")
+                    self.rcLastError = nil
                     self.rcrunning = false
                     self.rcready = true
                 } else {
                     self.logmsg("remote call init failed on \(process)")
+                    let error = RemoteCall.lastInitError()
+                    self.rcLastError = error
+                    if let error, !error.isEmpty {
+                        self.logmsg("remote call init failed on \(process): \(error)")
+                    } else {
+                        self.logmsg("remote call init failed on \(process)")
+                    }
                     self.rcrunning = false
                 }
                 completion?(success)
@@ -518,7 +528,12 @@ final class laramgr: ObservableObject {
                     self.logmsg("remote call initialized on \(process)")
                     self.rcrunning = false
                 } else {
-                    self.logmsg("remote call init failed on \(process)")
+                    let error = RemoteCall.lastInitError()
+                    if let error, !error.isEmpty {
+                        self.logmsg("remote call init failed on \(process): \(error)")
+                    } else {
+                        self.logmsg("remote call init failed on \(process)")
+                    }
                     self.rcrunning = false
                 }
             }

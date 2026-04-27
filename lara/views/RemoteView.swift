@@ -21,6 +21,8 @@ struct RemoteView: View {
     @State private var customTimeoutMs: Int = 100
     @State private var customMigBypass: Bool = false
     @State private var customLastResult: String = ""
+    @State private var hsRows: Int = 6
+    @State private var hsColumns: Int = 4
 
     private var dockMaxColumns: Int { rcdockunlimited ? 50 : 10 }
 
@@ -56,6 +58,38 @@ struct RemoteView: View {
                 }
             } header: {
                 Text("SpringBoard")
+            }
+
+            Section {
+                Stepper(value: $hsColumns, in: 1...10) {
+                    HStack {
+                        Text("Home screen columns")
+                        Spacer()
+                        Text("\(hsColumns)")
+                            .foregroundColor(.secondary)
+                            .monospacedDigit()
+                    }
+                }
+                
+                Stepper(value: $hsRows, in: 1...10) {
+                    HStack {
+                        Text("Home screen rows")
+                        Spacer()
+                        Text("\(hsRows)")
+                            .foregroundColor(.secondary)
+                            .monospacedDigit()
+                    }
+                }
+
+                Button {
+                    run("Patch Home Screen Grid \(hsColumns)x\(hsRows)") {
+                        return patch_homescreen_grid(mgr.sbProc, Int32(hsColumns), Int32(hsRows))
+                            ? "patch_homescreen_grid(\(hsColumns), \(hsRows)) -> ok"
+                            : "patch_homescreen_grid(\(hsColumns), \(hsRows)) -> failed"
+                    }
+                } label: {
+                    Text("Apply Home Screen Grid")
+                }
             }
 
             Section {

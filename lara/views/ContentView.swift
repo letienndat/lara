@@ -507,9 +507,12 @@ struct ContentView: View {
                     } header: {
                         Text("RemoteCall")
                     } footer: {
-                        if let error = mgr.sbProc?.lastError {
+                        if let error = mgr.rcLastError ?? mgr.sbProc?.lastError {
                             Text("RemoteCall error: \(error)")
                                 .foregroundColor(.red)
+                        }
+                        if RemoteCall.isLiveContainerRuntime() && !RemoteCall.isLiveProcessRuntime() {
+                            Text("RemoteCall needs a PAC-enabled LiveContainer launch context. The main exploit may still work when RemoteCall is unavailable.")
                         }
                         if isdebugged() {
                             Text("Not available when a debugger is attached.")
