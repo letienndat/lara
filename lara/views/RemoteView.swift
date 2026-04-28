@@ -6,11 +6,18 @@
 //
 
 import SwiftUI
+import UIKit
 import Darwin
 
 struct RemoteView: View {
     @ObservedObject var mgr: laramgr
     @State private var statusBarTimeFormat: String = "HH:mm"
+    @State private var statusBarTimeLine2Format1: String = "E"
+    @State private var statusBarTimeLine2Format2: String = "| d/M-LND/LNM"
+    @State private var statusBarTimeLine2Size1: CGFloat = 11
+    @State private var statusBarTimeLine2Size2: CGFloat = 11
+    @State private var statusBarTimeLine2Color1: Color = .white
+    @State private var statusBarTimeLine2Color2: Color = .white
     @State private var running: Bool = false
     @State private var columns: Int = 5
     @State private var performanceHUD: Int = -1
@@ -25,6 +32,18 @@ struct RemoteView: View {
     @State private var hsColumns: Int = 4
 
     private var dockMaxColumns: Int { rcdockunlimited ? 50 : 10 }
+
+//    private func rgbaComponents(for color: Color) -> (CGFloat, CGFloat, CGFloat, CGFloat) {
+//        let uiColor = UIColor(color)
+//        var red: CGFloat = 1
+//        var green: CGFloat = 1
+//        var blue: CGFloat = 1
+//        var alpha: CGFloat = 1
+//        if uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha) {
+//            return (red, green, blue, alpha)
+//        }
+//        return (1, 1, 1, 1)
+//    }
 
     var body: some View {
         List {
@@ -46,6 +65,72 @@ struct RemoteView: View {
             } footer: {
                 Text("The text automatically updates every MINUTE")
             }
+
+            Section {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Line 2 Format 1")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+
+                    TextField("e.g. E", text: $statusBarTimeLine2Format1)
+                        .autocorrectionDisabled()
+                        .textInputAutocapitalization(.never)
+                }
+
+                Stepper(value: $statusBarTimeLine2Size1, in: 9...15, step: CGFloat.Stride(0.5)) {
+                    HStack {
+                        Text("Size time 1")
+                        Spacer()
+                        Text(String(format: "%.1f", statusBarTimeLine2Size1))
+                            .foregroundColor(.secondary)
+                            .monospacedDigit()
+                    }
+                }
+
+//                ColorPicker("Color time 1", selection: $statusBarTimeLine2Color1, supportsOpacity: true)
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Line 2 Format 2")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+
+                    TextField("e.g. | d/M-LND/LNM", text: $statusBarTimeLine2Format2)
+                        .autocorrectionDisabled()
+                        .textInputAutocapitalization(.never)
+                }
+
+                Stepper(value: $statusBarTimeLine2Size2, in: 9...15, step: CGFloat.Stride(0.5)) {
+                    HStack {
+                        Text("Size time 2")
+                        Spacer()
+                        Text(String(format: "%.1f", statusBarTimeLine2Size2))
+                            .foregroundColor(.secondary)
+                            .monospacedDigit()
+                    }
+                }
+
+//                ColorPicker("Color time 2", selection: $statusBarTimeLine2Color2, supportsOpacity: true)
+
+                Button {
+                    run("NiceBar Fake") {
+//                        let color1 = rgbaComponents(for: statusBarTimeLine2Color1)
+//                        let color2 = rgbaComponents(for: statusBarTimeLine2Color2)
+                        nicebar_fake(mgr.sbProc,
+                                     statusBarTimeLine2Format1,
+                                     statusBarTimeLine2Size1,
+                                     statusBarTimeLine2Format2,
+                                     statusBarTimeLine2Size2)
+                        return "nicebar_fake() done"
+                    }
+                } label: {
+                    Text(running ? "Patching! Wait a moment..." : "Apply")
+                }
+            } header: {
+                Text("NiceBar Fake :))")
+            } footer: {
+                Text("Display the second line in the status bar. (First time running / After respringing / Restarting the device may take quite a while (around 20 seconds))");
+            }
+            .disabled(!mgr.rcready || running)
 
             Section {
                 Button {
@@ -466,7 +551,6 @@ struct RemoteView: View {
             }
         }
         .navigationTitle(Text("Tweaks"))
-        .disabled(running)
     }
 
     private func run(_ name: String, _ work: @escaping () -> String, onComplete: ((String) -> Void)? = nil) {
