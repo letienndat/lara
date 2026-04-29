@@ -347,6 +347,10 @@ private struct repoemojirow: View {
 
         Button {
             if isdownloaded, let localurl {
+				guard localurl.pathExtension.lowercased() == "ttc" else {
+            		mgr.logmsg("emoji font must be .ttc, got .\(localurl.pathExtension)")
+            		return
+        		}
                 let success = mgr.vfsoverwritefromlocalpath(target: emojipath, source: localurl.path)
                 success ? mgr.logmsg("emoji changed to \(emoji.name)") : mgr.logmsg("failed to change emojis")
             } else {
@@ -355,6 +359,16 @@ private struct repoemojirow: View {
         } label: {
             HStack {
                 Text(emoji.name)
+				if let remoteurl = URL(string: emoji.url),
+           			remoteurl.pathExtension.lowercased() != "ttc" {
+            		Text("not .ttc")
+                	.font(.caption2)
+                	.foregroundColor(.red)
+                	.padding(.horizontal, 5)
+                	.padding(.vertical, 2)
+                	.background(Color.red.opacity(0.1))
+                	.clipShape(Capsule())
+        		}
                 Spacer()
                 if repostore.downloading.contains(emoji.url) {
                     ProgressView()

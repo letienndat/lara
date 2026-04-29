@@ -32,6 +32,7 @@ struct ToolsView: View {
     @State private var issuepath: String = "/"
     @State private var uid: uid_t = getuid()
     @State private var pid: pid_t = getpid()
+    @State private var status: String?
     
     var body: some View {
         List {
@@ -140,6 +141,23 @@ struct ToolsView: View {
             } footer: {
                 Text("Currently broken.")
             }
+
+            Section {
+                Button {
+                    if mgr.PPHelper() {
+                        status = "Succeeded. Open the Pocket Poster app, open settings and tap Detect."
+                    } else {
+                        status = "Failed. Check logs."
+                    }
+                } label: {
+                    Text("Pocket Poster Helper")
+                }
+                .disabled(!mgr.sbxready)
+            } header: {
+                Text("Pocket Poster")
+            } footer: {
+                Text("Get the needed hashes for Pocket Poster without the need of a PC.")
+            }
             
             Section {
                 HStack {
@@ -216,6 +234,11 @@ struct ToolsView: View {
             }
         }
         .navigationTitle("Tools")
+        .alert("Status", isPresented: .constant(status != nil)) {
+                Button("OK") { status = nil }
+            } message: {
+                Text(status ?? "")
+            }
         .onAppear {
             if mgr.dsready {
                 getaslrstate()

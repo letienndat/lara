@@ -39,6 +39,7 @@ struct EditorView: View {
     
     private let path = "/var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches/com.apple.MobileGestalt.plist"
     private let ogmgurl: URL
+    let os = ProcessInfo().operatingSystemVersion
 
     init() {
         let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
@@ -88,15 +89,19 @@ struct EditorView: View {
                         }
                         .pickerStyle(.menu)
                     }
-                    Toggle("Action Button (17+)", isOn: mgkeybinding(["cT44WE1EohiwRzhsZ8xEsw"]))
+                    Toggle("Action Button", isOn: mgkeybinding(["cT44WE1EohiwRzhsZ8xEsw"]))
+                        .disabled(requiresVersion(17))
                     Toggle("Allow installing iPadOS apps", isOn: mgkeybinding(["9MZ5AdH43csAUajl/dU+IQ"], type: [Int].self, default: [1], enable: [1, 2]))
                     Toggle("Always on Display (18.0+)", isOn: mgkeybinding(["j8/Omm6s1lsmTDFsXjsBfA", "2OOJf1VhaM7NxfRok3HbWQ"]))
+                        .disabled(requiresVersion(18))
                     // Toggle("Apple Intelligence", isOn: bindingForAppleIntelligence())
                     //    .disabled(requiresVersion(18))
                     Toggle("Apple Pencil", isOn: mgkeybinding(["yhHcB0iH0d1XzPO/CFd3ow"]))
                     Toggle("Boot chime", isOn: mgkeybinding(["QHxt+hGLaBPbQJbXiUJX3w"]))
                     Toggle("Camera button (18.0rc+)", isOn: mgkeybinding(["CwvKxM2cEogD3p+HYgaW0Q", "oOV1jhJbdV3AddkcCg0AEA"]))
+                        .disabled(requiresVersion(18))
                     Toggle("Charge limit (17+)", isOn: mgkeybinding(["37NVydb//GP/GrhuTN+exg"]))
+                    .   disabled(requiresVersion(17))
                     Toggle("Crash Detection (might not work)", isOn: mgkeybinding(["HCzWusHQwZDea6nNhaKndw"]))
                     // Toggle("Dynamic Island (17.4+, might not work)", isOn: mgkeybinding(["YlEtTtHlNesRBMal1CqRaA"]))
                     // Toggle("Disable region restrictions", isOn: bindingForRegionRestriction())
@@ -317,5 +322,12 @@ struct EditorView: View {
                 valid = validate(mg)
             }
         )
+    }
+
+    private func requiresVersion(_ major : Int, _ minor: Int = 0, _ patch: Int = 0) -> Bool {
+        // XXYYZZ: major XX, minor YY, patch ZZ
+        let requiredVersion = major*10000 + minor*100 + patch
+        let currentVersion = os.majorVersion*10000 + os.minorVersion*100 + os.patchVersion
+        return currentVersion < requiredVersion
     }
 }

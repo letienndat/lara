@@ -434,6 +434,35 @@ struct SettingsView: View {
                     }
                     
                     HStack(alignment: .top) {
+                        AsyncImage(url: URL(string: "https://github.com/khanhduytran0.png")) { image in
+                            image
+                                .resizable()
+                                .scaledToFill()
+                        } placeholder: {
+                            ProgressView()
+                        }
+                        .frame(width: 40, height: 40)
+                        .clipShape(Circle())
+                        
+                        VStack(alignment: .leading) {
+                            Text("Duy Tran")
+                                .font(.headline)
+                            
+                            Text("Various remotecall-related improvements and features.")
+                                .font(.subheadline)
+                                .foregroundColor(Color.secondary)
+                        }
+                        
+                        Spacer()
+                    }
+                    .onTapGesture {
+                        if let url = URL(string: "https://github.com/khanhduytran0"),
+                           UIApplication.shared.canOpenURL(url) {
+                            UIApplication.shared.open(url)
+                        }
+                    }
+                    
+                    HStack(alignment: .top) {
                         AsyncImage(url: URL(string: "https://github.com/AppInstalleriOSGH.png")) { image in
                             image
                                 .resizable()
@@ -477,7 +506,7 @@ struct SettingsView: View {
                             Text("jailbreak.party")
                                 .font(.headline)
                             
-                            Text("All of the DirtyZero tweaks and emotional support.")
+                            Text("All of the DirtyZero tweaks.")
                                 .font(.subheadline)
                                 .foregroundColor(Color.secondary)
                         }
@@ -486,6 +515,35 @@ struct SettingsView: View {
                     }
                     .onTapGesture {
                         if let url = URL(string: "https://github.com/jailbreakdotparty"),
+                           UIApplication.shared.canOpenURL(url) {
+                            UIApplication.shared.open(url)
+                        }
+                    }
+                    
+                    HStack(alignment: .top) {
+                        AsyncImage(url: URL(string: "https://github.com/jurre111.png")) { image in
+                            image
+                                .resizable()
+                                .scaledToFill()
+                        } placeholder: {
+                            ProgressView()
+                        }
+                        .frame(width: 40, height: 40)
+                        .clipShape(Circle())
+                        
+                        VStack(alignment: .leading) {
+                            Text("Jurre")
+                                .font(.headline)
+                            
+                            Text("EditorView, PocketPoster Helper, various improvements.")
+                                .font(.subheadline)
+                                .foregroundColor(Color.secondary)
+                        }
+                        
+                        Spacer()
+                    }
+                    .onTapGesture {
+                        if let url = URL(string: "https://github.com/jurre111"),
                            UIApplication.shared.canOpenURL(url) {
                             UIApplication.shared.open(url)
                         }
@@ -514,12 +572,11 @@ struct SettingsView: View {
                         Spacer()
                     }
                     .onTapGesture {
-                        if let url = URL(string: "https://github.com/skadz108"),
+                        if let url = URL(string: "https://github.com/neonmodder123"),
                            UIApplication.shared.canOpenURL(url) {
                             UIApplication.shared.open(url)
                         }
                     }
-
                 } header: {
                     Text("Credits")
                 }

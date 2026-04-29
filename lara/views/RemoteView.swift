@@ -232,6 +232,17 @@ struct RemoteView: View {
                 } label: {
                     Text("Enable Grid App Switcher (Broken animation)")
                 }
+                
+                Button {
+                    run("Enable UIKit Debug Overlay") {
+                        let result = enable_debug_overlay(mgr.sbProc)
+                        return "enable_debug_overlay() -> \(result)"
+                    }
+                } label: {
+                    Text("Enable UIKit Debug Overlay")
+                }
+            } footer: {
+                Text("To use UIKit Debug Overlay, double tap the status bar.")
             }
             
             Section {
@@ -551,6 +562,7 @@ struct RemoteView: View {
             }
         }
         .navigationTitle(Text("Tweaks"))
+        .disabled(running)
     }
 
     private func run(_ name: String, _ work: @escaping () -> String, onComplete: ((String) -> Void)? = nil) {

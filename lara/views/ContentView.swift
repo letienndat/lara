@@ -244,7 +244,7 @@ struct ContentView: View {
                                             NavigationLink {
                                                 WhitelistView()
                                             } label: {
-                                                Label("Unblacklist (Broken?)", systemImage: "checkmark.seal")
+                                                Label("Unblacklist", systemImage: "checkmark.seal")
                                             }
                                         } header: {
                                             Text("App Management")
@@ -375,11 +375,14 @@ struct ContentView: View {
                                                 Label("DirtyZero", systemImage: "doc")
                                             }
                                             
-                                            NavigationLink {
-                                                DarkBoardView()
-                                            } label: {
-                                                Label("DarkBoard", systemImage: "app.badge")
+                                            if 1 == 2 {
+                                                NavigationLink {
+                                                    DarkBoardView()
+                                                } label: {
+                                                    Label("DarkBoard", systemImage: "app.badge")
+                                                }
                                             }
+                                            
                                             if os.majorVersion >= 26 {
                                                 NavigationLink {
                                                     LGView()
@@ -399,7 +402,7 @@ struct ContentView: View {
                                             NavigationLink {
                                                 WhitelistView()
                                             } label: {
-                                                Label("Unblacklist (Broken?)", systemImage: "checkmark.seal")
+                                                Label("Unblacklist", systemImage: "checkmark.seal")
                                             }
                                         } header: {
                                             Text("App Management")

@@ -55,6 +55,14 @@ final class laramgr: ObservableObject {
     static let italicfontpath = "/System/Library/Fonts/Core/SFUIItalic.ttf"
     static let monofontpath = "/System/Library/Fonts/Core/SFUIMono.ttf"
     private init() {}
+
+    struct AppInfo {
+        let executable: String
+        let displayName: String
+        let bundleName: String
+        let dataFolder: String
+        let bundleFolder: String
+    }
     
     func run(completion: ((Bool) -> Void)? = nil) {
         guard !dsrunning else { return }
@@ -445,7 +453,97 @@ final class laramgr: ObservableObject {
             }
         }
     }
-    
+
+    // inspired by nugget from leminlimez
+    func PPHelper() -> Bool {
+        do {
+            let fm = FileManager.default
+            let dataFolder = "/private/var/mobile/Containers/Data/Application"
+            let bundleFolder = "/private/var/containers/Bundle/Application"
+            var bundleIDs = ["com.apple.PosterBoard"]
+            if UIDevice.current.userInterfaceIdiom == .phone {
+                bundleIDs.append("com.apple.CarPlayWallpaper")
+            }
+            guard let appList = getAppList() else { return false}
+            var hashes: [String:String] = [:]
+            for bundleID in bundleIDs {
+                if let appInfo = appList[bundleID] {
+                    hashes[bundleID] = appInfo.dataFolder
+                } else {
+                    // this shouldn't happen
+                    logmsg("Could not find app with bundle ID \(bundleID).")
+                    return false
+                }
+            }
+            var PPbundleID = "com.leemin.Pocket-Poster"
+            for (bundleID, info) in appList {
+                if info.executable == "Pocket Poster" {
+                    PPbundleID = bundleID
+                    break
+                } else if info.executable == "LiveContainer" {
+                    PPbundleID = bundleID
+                }
+            }
+            if let PPHash = appList[PPbundleID]?.dataFolder {
+                for bundleID in hashes.keys {
+                    let fileName = "Nugget" + bundleID.replacingOccurrences(of: "com.apple.", with: "") + "Hash"
+                    let content = hashes[bundleID]!
+                    let filePath = dataFolder + "/" + PPHash + "/Documents/" + fileName
+                    try content.write(to: URL(fileURLWithPath: filePath), atomically: true, encoding: .utf8)
+                    logmsg("Wrote hash \(content) to \(filePath)")
+                }
+                return true
+            } else {
+                logmsg("Please install Pocket Poster before using Pocket Poster Helper. If you do have Pocket Poster installed, make sure you did not modify the bundle ID. If you installed Pocket Poster inside of LiveContainer, make sure you also did not modify the bundle ID of LiveContainer.")
+                return false
+            }
+        } catch {
+            logmsg("Error with Pocket Poster Helper: \(error.localizedDescription)")
+            return false
+        }
+    }
+
+    func getAppList() -> [String:AppInfo]? {
+        let fm = FileManager.default
+        let dataFolder = "/private/var/mobile/Containers/Data/Application"
+        let bundleFolder = "/private/var/containers/Bundle/Application"
+        var appList: [String:AppInfo] = [:]
+        do {
+            let appData = try fm.contentsOfDirectory(atPath: dataFolder)
+            for app in appData {
+                if let plist = NSDictionary(contentsOf: URL(fileURLWithPath: dataFolder + "/" + app + "/.com.apple.mobile_container_manager.metadata.plist")),
+                    let bundleID = plist["MCMMetadataIdentifier"] as? String {
+                    appList[bundleID] = AppInfo(executable: "", displayName: "", bundleName: "", dataFolder: app, bundleFolder: "")
+                }
+            }
+
+            let appBundles = try fm.contentsOfDirectory(atPath: bundleFolder)
+            for app in appBundles {
+                let appPath = bundleFolder + "/" + app
+                let contents = try fm.contentsOfDirectory(atPath: appPath)
+                for item in contents {
+                    if item.hasSuffix(".app") {
+                        if let plist = NSDictionary(contentsOf: URL(fileURLWithPath: appPath + "/" + item + "/Info.plist")),
+                            let bundleID = plist["CFBundleIdentifier"] as? String {
+                            let executable = plist["CFBundleExecutable"] as? String ?? ""
+                            let displayName = plist["CFBundleDisplayName"] as? String ?? ""
+                            let bundleName = plist["CFBundleName"] as? String ?? ""
+                            let dataFolderID = appList[bundleID]?.dataFolder ?? ""
+                            let appInfo = AppInfo(executable: executable, displayName: displayName, bundleName: bundleName, dataFolder: dataFolderID, bundleFolder: app)
+                            appList[bundleID] = appInfo
+                        }
+                        break
+                    }
+                }
+
+            }
+        } catch {
+            logmsg("Error getting app list: \(error.localizedDescription)")
+            return nil
+        }
+        return appList
+    }
+
     @discardableResult
     func apfsown(path: String, uid: UInt32, gid: UInt32) -> Bool {
         if !isapfs(path) {
