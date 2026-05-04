@@ -48,7 +48,10 @@ final class laramgr: ObservableObject {
     @Published var rcready: Bool = false
     @Published var showRespringView: Bool = false
     
+    @Published var showLogs: Bool = false
+    
     var sbProc: RemoteCall?
+    var ytProc = RemoteCall(process: "youtube", useMigFilterBypass: false)
     
     static let shared = laramgr()
     static let fontpath = "/System/Library/Fonts/Core/SFUI.ttf"
@@ -394,18 +397,33 @@ final class laramgr: ObservableObject {
         return ok ? (true, "vfs overwrite ok") : (false, result.1 + ", vfs overwrite failed")
     }
     
-    func vfszeropage(at path: String) -> Bool {
-        let result = path.withCString { cpath in
-            vfs_zeropage(cpath, 0)
+    func vfszeropage(at path: String, dumb: Bool) -> Bool {
+        if dumb {
+            guard vfsready else {
+                self.logmsg("(vfs) zerofile failed (vfs not ready)")
+                return false
+            }
+            let ok = path.withCString { vfs_zerofile($0) } == 0
+            if ok {
+                self.logmsg("(vfs) zeroed \(path)")
+                return true
+            } else {
+                self.logmsg("(vfs) zerofile failed")
+                return false
+            }
+        } else {
+            let result = path.withCString { cpath in
+                vfs_zeropage(cpath, 0)
+            }
+            
+            if result != 0 {
+                self.logmsg("(vfs) zeropage failed")
+                return false
+            }
+            
+            self.logmsg("(vfs) zeroed first page of \(path)")
+            return true
         }
-        
-        if result != 0 {
-            self.logmsg("(vfs) zeropage failed")
-            return false
-        }
-        
-        self.logmsg("(vfs) zeroed first page of \(path)")
-        return true
     }
     
     func sbxgettoken(pid: Int32) -> UInt64? {

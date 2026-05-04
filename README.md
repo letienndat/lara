@@ -4,6 +4,7 @@
   <br>
   <h1>LARA</h1>
 
+  <p>A customization toolbox that utilizes DarkSword. iOS 16.0 - iOS 18.7.1 & iOS 26.0.x, excluding M5 and A19.</p>
   <p>star this repo please :P</p>
 </div>
 
@@ -27,53 +28,40 @@
 
 <p align="center">
   <a href="#support">support</a> •
-  <a href="#compatibility">compatibility</a> •
   <a href="#features">features</a> •
   <a href="#known-issues">known issues</a> •
-  <a href="#installation">installation</a> •
   <a href="#tips">tips</a> •
   <a href="#credits">credits</a>
 </p>
 
-> [!WARNING]
-> Due to my laptop breaking, lara development is halted until i get a replacement screen or laptop. I thank everyone who has helped the project so far and hope to be back one day.
+>[!NOTE]
+>Lara is still in a super rough state and is undergoing a rewrite. If you are experiencing any issues, it is best to simply wait instead of opening issues or asking for support in the Discord. If you would like to contribute, it is best to wait after the rewrite. We will not be accepting PRs during this time or resolving/responding to any issues. Thank you for your understanding!
 
----
+## Support
+| OS Version | Support Status |
+| - | - |
+| iOS 16.0 - iOS 17.0.x | Untested |
+| iOS 17.1 - iOS 18.7.1 | Supported |
+| iOS 18.7.2 - iOS 18.7.x | Not Supported |
+| iOS 26.0 - iOS 26.0.1 | Supported |
+| iOS 26.1+ | Not Supported |
 
-## support
+Important Notes:
+- This tool does **not** work on M5 or A19 (Pro) devices regardless of iOS version. This is due to MTE.
+- On M-series CPUs, YMMV. If you are on an M-series device, go to lara settings, scroll down set `t1sz_boot` to `0x11`.
+- Issues involving lara not working on either unsupported or *techincally* supported versions will be closed immediately.
 
-lara will at its absolute best only ever support versions up to iOS 26.0.1/iOS 18.7.1. the exploit was patched after those versions.
+<p align="center">
+  <a href="https://celloserenity.github.io/altdirect/?url=https://raw.githubusercontent.com/rooootdev/lara/refs/heads/main/source.json" target="_blank">
+    <img src="https://github.com/CelloSerenity/altdirect/blob/main/assets/png/AltSource_Blue.png?raw=true" alt="Add AltSource" width="200">
+  </a>
+  <a href="https://github.com/rooootdev/lara/releases/download/latest/lara.ipa" target="_blank">
+    <img src="https://github.com/CelloSerenity/altdirect/blob/main/assets/png/Download_Blue.png?raw=true" alt="Download .ipa" width="200">
+  </a>
+</p>
 
-currently tested on iOS 17.1 - 26.0.1, up to iOS 18.7.1.
-
-## compatibility
-
-| series              | version / chip    | status                    |
-| :------------------ | :---------------- | :------------------------ |
-| **iOS 17**          | all versions      | supported                 |
-| **iOS 18**          | 18.0 — 18.7.1     | supported                 |
-| **iOS 26.0/26.0.1** | 26.0 — 26.0.1 **only** | supported            |
-| **iOS 26.1+**       | 26.1+             | **patched**               |
-| **M-series chips**  | M1 - M4           | partially supported. YMMV |
-
-> [!CAUTION]
-> if you are on an M-series device, go to lara settings, scroll down set `t1sz_boot` to `0x11`. if you are on any iOS version higher than 26.0.1 the app will crash on launch. this isn't a bug, lara just doesnt support those devices.
->
-> **ISSUES THAT INVOLVE LARA NOT WORKING ON UNSUPPORTED VERSIONS WILL BE CLOSED IMMEDIATELY.**<br>
-> **Issues related to lara not working on versions that the exploit DOES technically support will be closed and added to the known issues section**
-
-If you run lara on your device, and it ends up working, please contact me on [discord](https://discord.gg/gw8PcRF3Jr) and tell me:
-
-1. your device
-2. your iOS version
-3. what you tested in lara (eg. Run Exploit, Init KFS, etc.)
-
-If lara doesnt work on your device, and you want to help the project, please also provide your logs and iOS version.
-
-## features
-
-### implemented
-
+## Features
+### Implemented
 - Font Overwrite
 - Custom Overwrite
 - Card Overwrite
@@ -90,25 +78,18 @@ If lara doesnt work on your device, and you want to help the project, please als
 - Performance HUD
 - JIT Enabler (only for apps with `get-task-allow`)
 
-### coming soon
-
+### Coming Soon
 - App Decrypt
 
-## known issues
-
+## Known Issues
 - wont work on M5, A19 and A19 Pro due to MTE
-- on iOS 17.x, the kernel may panic when lara is closed from the app switcher.
-- downloading OTA updates does not work.
+- the kernel may panic when lara is closed from the app switcher.
 - dirtyzero does not work.
-- ui is buggy on 17.x
-- .aea ota updates do not work.
-- A16+ and M-series devices dont support RemoteCall (yet)
 - apps don't detect JIT enabled however they are enabled.
+- remotecall is super bugged and may not work properly.
 
-### fixes
-
+### Fixes
 #### about the kernelcache
-
 lara needs the **kernelcache** (the iOS kernel binary from your exact iOS version + device) to run. on first launch it runs a patchfinder ([opa334's XPF](https://github.com/opa334/ChOma) via libgrabkernel2) against the kernelcache to locate the kernel symbols and struct offsets the exploit touches — `kernproc`, `rootvnode`, `proc` size, etc. these move on every iOS release and every SoC, so lara can't ship them hardcoded.
 
 the app tries to download the kernelcache for you automatically (the **Download Kernelcache** button in Settings hits Apple's IPSW servers). when that fails — usually a network/CDN hiccup or an unusual device/build combo — grab one manually with the steps below and import it via **Import Kernelcache from Files**.
@@ -135,29 +116,16 @@ if things get weird later, **Delete Kernelcache Data** in Settings wipes the cac
    - Place the kernelcache file there.
 9. Rename the file to `kernelcache` (without extension).
 
-## installation
-
-<p align="center">
-  <a href="https://celloserenity.github.io/altdirect/?url=https://raw.githubusercontent.com/rooootdev/lara/refs/heads/main/source.json" target="_blank">
-    <img src="https://github.com/CelloSerenity/altdirect/blob/main/assets/png/AltSource_Blue.png?raw=true" alt="Add AltSource" width="200">
-  </a>
-  <a href="https://github.com/rooootdev/lara/releases/download/latest/lara.ipa" target="_blank">
-    <img src="https://github.com/CelloSerenity/altdirect/blob/main/assets/png/Download_Blue.png?raw=true" alt="Download .ipa" width="200">
-  </a>
-</p>
-
-## tips
-
+## Tips
 - deleting and redownloading kernelcache is known to fix many issues. do this before asking me for support.
 - closing and reopening the app can fix font change issues.
 - respringing is needed to apply springboard changes such as font changes.
 
-## credits
-
+## Credits
 - opa334 for the kernel exploit poc, ChOma and XPF
 - AppInstaller iOS for help with offsets
 - AlfieCG for libgrabkernel2
 - Everyone who contributed! (Visible <a href="https://github.com/rooootdev/lara/graphs/contributors">Here</a>)
 
-<br>
-<div align="center">a beautiful kexploit ♥️</div>
+<br> 
+<div align="center">a beautiful kexploit ❤️</div>

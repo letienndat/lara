@@ -1,11 +1,14 @@
 name: build
+
 on:
   push:
     branches: [ main ]
   pull_request:
   workflow_dispatch:
+
 permissions:
   contents: write
+
 jobs:
   build:
     runs-on: macos-26
@@ -13,18 +16,23 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4
+
       - name: setup xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: latest-stable
+
       - name: show xcode version
         run: xcodebuild -version
+
       - name: install ldid
         run: brew install ldid
+
       - name: build
         run: |
           chmod +x scripts/build_ipa.sh
           ./scripts/build_ipa.sh
+
       - name: upload build artifact
         if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
@@ -33,65 +41,54 @@ jobs:
           path: |
             build/lara.ipa
             build/xcodebuild.log
+
       - name: upload ipa for release
         if: github.event_name != 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: release-ipa
           path: build/lara.ipa
+
   release:
     if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
+
     steps:
       - name: checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - name: download all ipas
         uses: actions/download-artifact@v4
         with:
           pattern: release-ipa*
           merge-multiple: true
           path: build/
+
       - name: create release tag
-        id: tag
         run: |
-          TAG="build_$(date +'%Y%m%d%H%M%S')-$(git rev-parse --short HEAD)"
+          TAG="nightly_$(date +'%Y%m%d%H%M%S')-$(git rev-parse --short HEAD)"
           echo "TAG=$TAG" >> $GITHUB_ENV
+
       - name: get last 12h commits
-        id: commits
         run: |
           COMMITS=$(git log --since="12 hours ago" --pretty=format:"- %h %s (%an)")
           if [ -z "$COMMITS" ]; then
-            COMMITS="No commits in the last 12 hours"
+            COMMITS="no commits in the last 12 hours"
           fi
           echo "COMMITS<<EOF" >> $GITHUB_ENV
           echo "$COMMITS" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
-      - name: delete old release
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const releases = await github.rest.repos.listReleases({
-              owner: context.repo.owner,
-              repo: context.repo.repo
-            });
-            const latestRelease = releases.data.find(r => r.tag_name === 'latest');
-            if (latestRelease) {
-              await github.rest.repos.deleteRelease({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                release_id: latestRelease.id
-              });
-            }
-      - name: create new release
+
+      - name: create nightly release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: latest
-          name: Latest Build
+          tag_name: ${{ env.TAG }}
+          name: nightly build (${{ env.TAG }})
           body: ${{ env.COMMITS }}
+          prerelease: true
           files: |
             build/lara.ipa
         env:

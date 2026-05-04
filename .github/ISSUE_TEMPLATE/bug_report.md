@@ -3,7 +3,7 @@ name: Bug report
 about: This is for all bugs/issues.
 title: "[BUG] Insert Title Here"
 labels: bug
-assignees: Pro42good
+assignees: ''
 
 ---
 
