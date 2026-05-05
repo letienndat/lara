@@ -18,6 +18,7 @@ struct RemoteView: View {
     @State private var statusBarTimeLine2Size2: CGFloat = 11
     @State private var statusBarTimeLine2Color1: Color = .white
     @State private var statusBarTimeLine2Color2: Color = .white
+    @State private var statePatchNiceBarFake: Bool = false
     @State private var running: Bool = false
     @State private var columns: Int = 5
     @State private var performanceHUD: Int = -1
@@ -32,18 +33,6 @@ struct RemoteView: View {
     @State private var hsColumns: Int = 4
 
     private var dockMaxColumns: Int { rcdockunlimited ? 50 : 10 }
-
-//    private func rgbaComponents(for color: Color) -> (CGFloat, CGFloat, CGFloat, CGFloat) {
-//        let uiColor = UIColor(color)
-//        var red: CGFloat = 1
-//        var green: CGFloat = 1
-//        var blue: CGFloat = 1
-//        var alpha: CGFloat = 1
-//        if uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha) {
-//            return (red, green, blue, alpha)
-//        }
-//        return (1, 1, 1, 1)
-//    }
 
     var body: some View {
         List {
@@ -87,7 +76,7 @@ struct RemoteView: View {
                     }
                 }
 
-//                ColorPicker("Color time 1", selection: $statusBarTimeLine2Color1, supportsOpacity: true)
+                ColorPicker("Color time 1", selection: $statusBarTimeLine2Color1, supportsOpacity: true)
 
                 VStack(alignment: .leading, spacing: 6) {
                     Text("Line 2 Format 2")
@@ -109,21 +98,22 @@ struct RemoteView: View {
                     }
                 }
 
-//                ColorPicker("Color time 2", selection: $statusBarTimeLine2Color2, supportsOpacity: true)
+                ColorPicker("Color time 2", selection: $statusBarTimeLine2Color2, supportsOpacity: true)
 
                 Button {
                     run("NiceBar Fake") {
-//                        let color1 = rgbaComponents(for: statusBarTimeLine2Color1)
-//                        let color2 = rgbaComponents(for: statusBarTimeLine2Color2)
-                        nicebar_fake(mgr.sbProc,
-                                     statusBarTimeLine2Format1,
-                                     statusBarTimeLine2Size1,
-                                     statusBarTimeLine2Format2,
-                                     statusBarTimeLine2Size2)
+                        let result = nicebar_fake(mgr.sbProc,
+                                                  statusBarTimeLine2Format1,
+                                                  statusBarTimeLine2Size1,
+                                                  UIColor(statusBarTimeLine2Color1),
+                                                  statusBarTimeLine2Format2,
+                                                  statusBarTimeLine2Size2,
+                                                  UIColor(statusBarTimeLine2Color1))
+                        statePatchNiceBarFake = result
                         return "nicebar_fake() done"
                     }
                 } label: {
-                    Text(running ? "Patching! Wait a moment..." : "Apply")
+                    Text(running ? "Patching! Wait a moment..." : (statePatchNiceBarFake ? "Successfully! Apply again" : "Apply"))
                 }
             } header: {
                 Text("NiceBar Fake :))")
